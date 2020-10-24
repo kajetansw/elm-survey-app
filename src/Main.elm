@@ -17,6 +17,34 @@ main =
 -- MODEL
 
 
+type alias LabeledValue v =
+    { text : String
+    , value : v
+    }
+
+
+type Answer
+    = CheckboxAnswer (List (LabeledValue Bool))
+    | TextAnswer (LabeledValue String)
+    | IntegerAnswer (LabeledValue Int)
+    | YesNoAnswer (LabeledValue Bool)
+
+
+type Question
+    = Question
+        { text : String
+        , answer : Answer
+        }
+
+
+type Survey
+    = Survey
+        { previous : List Question
+        , current : Question
+        , next : List Question
+        }
+
+
 type alias Model =
     Int
 
