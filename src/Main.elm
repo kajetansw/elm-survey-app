@@ -18,17 +18,17 @@ main =
 -- MODEL
 
 
-type alias LabeledValue v =
+type alias Labeled v =
     { text : String
     , value : v
     }
 
 
 type Answer
-    = CheckboxAnswer (List (LabeledValue Bool))
-    | TextAnswer (LabeledValue String)
-    | IntegerAnswer (LabeledValue Int)
-    | YesNoAnswer (LabeledValue Bool)
+    = CheckboxAnswer (List (Labeled Bool))
+    | TextAnswer (Labeled String)
+    | IntegerAnswer (Labeled Int)
+    | YesNoAnswer (Labeled Bool)
 
 
 type Question
