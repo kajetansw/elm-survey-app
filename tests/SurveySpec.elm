@@ -76,44 +76,40 @@ suite =
 
 testQuestion1 : Question
 testQuestion1 =
-    Question
-        { text = "TestQuestion1"
-        , answer =
-            CheckboxAnswer
-                [ { text = "A1", value = False }
-                , { text = "A2", value = False }
-                , { text = "A3", value = False }
-                ]
-        }
+    { text = "TestQuestion1"
+    , answer =
+        CheckboxAnswer
+            [ { text = "A1", value = False }
+            , { text = "A2", value = False }
+            , { text = "A3", value = False }
+            ]
+    }
 
 
 testQuestion2 : Question
 testQuestion2 =
-    Question
-        { text = "TestQuestion2"
-        , answer = YesNoAnswer False
-        }
+    { text = "TestQuestion2"
+    , answer = YesNoAnswer False
+    }
 
 
 testQuestion3 : Question
 testQuestion3 =
-    Question
-        { text = "TestQuestion3"
-        , answer =
-            TextAnswer
-                { text = "TestAnswer"
-                , value = "TestAnswer"
-                }
-        }
+    { text = "TestQuestion3"
+    , answer =
+        TextAnswer
+            { text = "TestAnswer"
+            , value = "TestAnswer"
+            }
+    }
 
 
 testQuestion4 : Question
 testQuestion4 =
-    Question
-        { text = "TestQuestion3"
-        , answer =
-            IntegerAnswer
-                { text = "TestAnswer"
-                , value = 1
-                }
-        }
+    { text = "TestQuestion3"
+    , answer =
+        IntegerAnswer
+            { text = "TestAnswer"
+            , value = 1
+            }
+    }

@@ -10,11 +10,10 @@ type alias Survey =
     }
 
 
-type Question
-    = Question
-        { text : String
-        , answer : Answer
-        }
+type alias Question =
+    { text : String
+    , answer : Answer
+    }
 
 
 type Answer
@@ -80,36 +79,33 @@ previousQuestion { previous, current, next } =
 
 question1 : Question
 question1 =
-    Question
-        { text = "What's your daily front-end stack?"
-        , answer =
-            CheckboxAnswer
-                [ { text = "JavaScript", value = False }
-                , { text = "TypeScript", value = False }
-                , { text = "Elm", value = False }
-                , { text = "Angular", value = False }
-                , { text = "React", value = False }
-                , { text = "Vue", value = False }
-                , { text = "PureScript", value = False }
-                ]
-        }
+    { text = "What's your daily front-end stack?"
+    , answer =
+        CheckboxAnswer
+            [ { text = "JavaScript", value = False }
+            , { text = "TypeScript", value = False }
+            , { text = "Elm", value = False }
+            , { text = "Angular", value = False }
+            , { text = "React", value = False }
+            , { text = "Vue", value = False }
+            , { text = "PureScript", value = False }
+            ]
+    }
 
 
 question2 : Question
 question2 =
-    Question
-        { text = "Have you ever tried Elm?"
-        , answer = YesNoAnswer False
-        }
+    { text = "Have you ever tried Elm?"
+    , answer = YesNoAnswer False
+    }
 
 
 question3 : Question
 question3 =
-    Question
-        { text = "If so, for how many years?"
-        , answer =
-            RadioAnswer
-                { labels = [ Label "0 - 1", Label "2 - 3", Label "3 - 5", Label "5 - 8" ]
-                , picked = Nothing
-                }
-        }
+    { text = "If so, for how many years?"
+    , answer =
+        RadioAnswer
+            { labels = [ Label "0 - 1", Label "2 - 3", Label "3 - 5", Label "5 - 8" ]
+            , picked = Nothing
+            }
+    }
