@@ -7,14 +7,15 @@
     "elm": "elm",
     "elm-format": "elm-format",
     "elm-live": "elm-live",
+    "elm-test": "elm-test",
     "tailwind": "tailwind",
-
     "build": "yarn build:css && yarn build:elm && yarn copy-index",
     "build:css": "tailwind build styles.css -o main.css",
     "build:elm": "elm make src/Main.elm --output=dist/app.js --optimize",
     "copy-index": "copyfiles index.html dist/ && copyfiles main.css dist/",
     "format": "elm-format src/",
-    "start": "yarn build:css && elm-live src/Main.elm -- --output=app.js"
+    "start": "yarn build:css && elm-live src/Main.elm -- --output=app.js",
+    "test": "elm-test"
   },
   "author": "Kajetan Swiatek",
   "license": "ISC",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "copyfiles": "^2.4.0",
     "elm-format": "^0.8.4",
-    "elm-live": "^4.0.2"
+    "elm-live": "^4.0.2",
+    "elm-test": "^0.19.1-revision4"
   }
 }
