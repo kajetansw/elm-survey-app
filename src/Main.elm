@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, form, h1, text)
+import Html exposing (Html, button, div, span, text)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Survey exposing (..)
@@ -59,9 +59,10 @@ view model =
     div [ class "w-full max-w-md" ]
         [ div
             [ class "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center" ]
-            [ h1 [ class "text-xl inline-block" ] [ text model.current.text ]
+            [ span [ class "text-base text-gray-500" ] [ currentQuestionNoText model ]
+            , span [ class "text-xl inline-block" ] [ text model.current.text ]
             , div
-                [class "flex flex-row w-full"]
+                [ class "flex flex-row w-full" ]
                 [ button
                     [ onClick PreviousQuestion
                     , class "bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 mr-2 rounded"
@@ -75,3 +76,8 @@ view model =
                 ]
             ]
         ]
+
+
+currentQuestionNoText : Survey -> Html msg
+currentQuestionNoText s =
+    text ((s |> currentQuestionNo |> String.fromInt) ++ "/" ++ (s |> surveyLength |> String.fromInt))

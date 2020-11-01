@@ -73,6 +73,16 @@ previousQuestion { previous, current, next } =
             Survey (List.reverse rest) newCurrent (List.append [ current ] next)
 
 
+currentQuestionNo : Survey -> Int
+currentQuestionNo s =
+    List.length s.previous + 1
+
+
+surveyLength : Survey -> Int
+surveyLength s =
+    currentQuestionNo s + List.length s.next
+
+
 
 -- STUBS
 
