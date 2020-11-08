@@ -97,10 +97,7 @@ testQuestion3 : Question
 testQuestion3 =
     { text = "TestQuestion3"
     , answer =
-        TextAnswer
-            { text = "TestAnswer"
-            , value = "TestAnswer"
-            }
+        TextAnswer "Test"
     }
 
 
@@ -108,8 +105,5 @@ testQuestion4 : Question
 testQuestion4 =
     { text = "TestQuestion3"
     , answer =
-        IntegerAnswer
-            { text = "TestAnswer"
-            , value = 1
-            }
+        IntegerAnswer (Just 1)
     }

@@ -1,5 +1,7 @@
 module Survey exposing (..)
 
+import Html exposing (Html, div, text)
+
 -- TYPES
 
 
@@ -19,9 +21,10 @@ type alias Question =
 type Answer
     = CheckboxAnswer (List (Labeled Bool))
     | RadioAnswer RadioAnswer_
-    | TextAnswer (Labeled String)
-    | IntegerAnswer (Labeled Int)
+    | TextAnswer String
+    | IntegerAnswer (Maybe Int)
     | YesNoAnswer Bool
+    | GoToURLButton String
 
 
 type alias RadioAnswer_ =
@@ -119,3 +122,32 @@ question3 =
             , picked = Nothing
             }
     }
+
+
+question4 : Question
+question4 =
+    { text = "If no, will you give it a try?"
+    , answer = YesNoAnswer False
+    }
+
+
+question5 : Question
+question5 =
+    { text = "Did you enjoy the talk? :)"
+    , answer = YesNoAnswer False
+    }
+
+
+question6 : Question
+question6 =
+    { text = "If so, give me a follow for more content!"
+    , answer = GoToURLButton "http://twitter.com/kajetansw"
+    }
+
+
+question7 : Question
+question7 =
+    { text = "If you have any, please give me some feedback (optional)"
+    , answer = TextAnswer ""
+    }
+
