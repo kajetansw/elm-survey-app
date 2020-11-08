@@ -1,8 +1,8 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, span, text, a)
-import Html.Attributes exposing (class, href)
+import Html exposing (Html, a, button, div, span, text)
+import Html.Attributes exposing (class, href, target)
 import Html.Events exposing (onClick)
 import Survey exposing (..)
 
@@ -59,8 +59,8 @@ view model =
     div [ class "w-full max-w-md" ]
         [ div [ class "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center" ]
             [ span [ class "text-base text-gray-500" ] [ currentQuestionNoText model ]
-            , viewAnswer model.current.answer
             , span [ class "text-xl inline-block" ] [ text model.current.text ]
+            , viewAnswer model.current.answer
             , div [ class "flex flex-row w-full" ]
                 [ button
                     [ onClick PreviousQuestion
@@ -100,5 +100,10 @@ viewAnswer answer =
         YesNoAnswer bool ->
             div [] []
 
-        GoToURLButton url ->
-            a [ href url ] []
+        GoToURLButton anchorUrl anchorText ->
+            a
+                [ href anchorUrl
+                , class "bg-blue-500 rounded-md text-white p-2"
+                , target "_blank"
+                ]
+                [ text anchorText ]

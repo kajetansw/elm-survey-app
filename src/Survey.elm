@@ -2,6 +2,8 @@ module Survey exposing (..)
 
 import Html exposing (Html, div, text)
 
+
+
 -- TYPES
 
 
@@ -24,7 +26,15 @@ type Answer
     | TextAnswer String
     | IntegerAnswer (Maybe Int)
     | YesNoAnswer Bool
-    | GoToURLButton String
+    | GoToURLButton AnchorURL AnchorText
+
+
+type alias AnchorURL =
+    String
+
+
+type alias AnchorText =
+    String
 
 
 type alias RadioAnswer_ =
@@ -141,7 +151,7 @@ question5 =
 question6 : Question
 question6 =
     { text = "If so, give me a follow for more content!"
-    , answer = GoToURLButton "http://twitter.com/kajetansw"
+    , answer = GoToURLButton "http://twitter.com/kajetansw" "Twitter @kajetansw"
     }
 
 
@@ -150,4 +160,3 @@ question7 =
     { text = "If you have any, please give me some feedback (optional)"
     , answer = TextAnswer ""
     }
-
