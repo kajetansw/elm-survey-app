@@ -43,6 +43,7 @@ type Msg
     = NextQuestion
     | PreviousQuestion
     | SelectAnswerChanged String
+    | TextAnswerChanged String
 
 
 update : Msg -> Model -> Model
@@ -63,6 +64,21 @@ update msg model =
 
                         updatedAnswer =
                             SelectAnswer (pickSelectAnswer sa value)
+                    in
+                    { model | current = { currentQuestion | answer = updatedAnswer } }
+
+                _ ->
+                    model
+
+        TextAnswerChanged value ->
+            case model.current.answer of
+                TextAnswer txt ->
+                    let
+                        currentQuestion =
+                            model.current
+
+                        updatedAnswer =
+                            TextAnswer value
                     in
                     { model | current = { currentQuestion | answer = updatedAnswer } }
 
@@ -127,8 +143,12 @@ viewAnswer s =
                 , viewDropdownArrow
                 ]
 
-        TextAnswer text ->
-            textarea [ class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" ] []
+        TextAnswer txt ->
+            textarea
+                [ class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                , onChange (\val -> TextAnswerChanged val)
+                ]
+                [ text txt ]
 
         IntegerAnswer labeled ->
             div [] []
