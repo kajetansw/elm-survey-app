@@ -6,6 +6,8 @@ import Html.Attributes exposing (class, selected, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
+import Svg as SVG
+import Svg.Attributes as SVGA
 
 
 
@@ -109,20 +111,32 @@ viewAnswer s =
         SelectAnswer answer ->
             let
                 isSelected : String -> Bool
-                isSelected option = answer.picked == option
+                isSelected option =
+                    answer.picked == option
 
                 optionToHtml : String -> Html Msg
                 optionToHtml txt =
                     option [ value txt, selected (isSelected txt) ] [ text txt ]
             in
-            select
-                [ class "block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                , onChange (\val -> SelectAnswerChanged val)
+            div [ class "inline-block relative w-full" ]
+                [ select
+                    [ class "block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                    , onChange (\val -> SelectAnswerChanged val)
+                    ]
+                    (List.map optionToHtml answer.options)
+                , viewDropdownArrow
                 ]
-                (List.map optionToHtml answer.options)
 
         TextAnswer text ->
             textarea [ class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" ] []
 
         IntegerAnswer labeled ->
             div [] []
+
+
+viewDropdownArrow : Html Msg
+viewDropdownArrow =
+    div [ class "pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" ]
+        [ SVG.svg [ SVGA.class "fill-current h-4 w-4", SVGA.viewBox "0 0 20 20" ]
+            [ SVG.path [ SVGA.d "M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" ] [] ]
+        ]
