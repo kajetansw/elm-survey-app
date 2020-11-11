@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, input, label, option, select, span, text, textarea)
-import Html.Attributes exposing (class, selected, type_, value)
+import Html.Attributes exposing (checked, class, selected, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
@@ -42,6 +42,7 @@ type Msg
     | PreviousQuestion
     | SelectAnswerChanged String
     | TextAnswerChanged String
+    | CheckboxAnswerChanged String Bool
 
 
 update : Msg -> Model -> Model
@@ -77,6 +78,21 @@ update msg model =
 
                         updatedAnswer =
                             TextAnswer value
+                    in
+                    { model | current = { currentQuestion | answer = updatedAnswer } }
+
+                _ ->
+                    model
+
+        CheckboxAnswerChanged txt value ->
+            case model.current.answer of
+                CheckboxAnswer ls ->
+                    let
+                        currentQuestion =
+                            model.current
+
+                        updatedAnswer =
+                            CheckboxAnswer (pickCheckboxAnswer txt value ls)
                     in
                     { model | current = { currentQuestion | answer = updatedAnswer } }
 
@@ -120,12 +136,39 @@ viewAnswer : Survey -> Html Msg
 viewAnswer s =
     case s.current.answer of
         CheckboxAnswer ls ->
-            div [ class "flex mt-6" ]
-                [ label [ class "flex items-center" ]
-                    [ input [ type_ "checkbox", class "form-checkbox" ] []
-                    , span [ class "ml-2" ] [ text "I agree" ]
-                    ]
-                ]
+            let
+                isChecked : String -> Bool
+                isChecked txt =
+                    let
+                        matchingValues =
+                            List.filter (\l -> l.text == txt) ls
+                    in
+                    case matchingValues of
+                        [] ->
+                            False
+
+                        _ ->
+                            List.all (\l -> l.value == True) matchingValues
+
+                labeledValuesToHtml : List (Html Msg)
+                labeledValuesToHtml =
+                    List.map
+                        (\l ->
+                            label [ class "flex items-center" ]
+                                [ input
+                                    [ type_ "checkbox"
+                                    , class "form-checkbox"
+                                    , checked (isChecked l.text)
+                                    , onClick (CheckboxAnswerChanged l.text (not l.value))
+                                    ]
+                                    []
+                                , span [ class "ml-2" ] [ text l.text ]
+                                ]
+                        )
+                        ls
+            in
+            div [ class "flex flex-col mt-6" ]
+                labeledValuesToHtml
 
         SelectAnswer answer ->
             let
