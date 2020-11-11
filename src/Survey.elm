@@ -22,11 +22,9 @@ type alias Question =
 
 type Answer
     = CheckboxAnswer (List (Labeled Bool))
-    | RadioAnswer RadioAnswer_
+    | SelectAnswer SelectAnswer_
     | TextAnswer String
     | IntegerAnswer (Maybe Int)
-    | YesNoAnswer Bool
-    | GoToURLButton AnchorURL AnchorText
 
 
 type alias AnchorURL =
@@ -37,9 +35,9 @@ type alias AnchorText =
     String
 
 
-type alias RadioAnswer_ =
-    { labels : List Label
-    , picked : Maybe Label
+type alias SelectAnswer_ =
+    { options : List String
+    , picked : String
     }
 
 
@@ -49,21 +47,17 @@ type alias Labeled v =
     }
 
 
-type Label
-    = Label String
-
-
 
 -- FUNCTIONS
 
 
-pickRadioAnswer : RadioAnswer_ -> Label -> RadioAnswer_
-pickRadioAnswer { labels, picked } label =
-    if List.member label labels then
-        { labels = labels, picked = Just label }
+pickSelectAnswer : SelectAnswer_ -> String -> SelectAnswer_
+pickSelectAnswer { options, picked } label =
+    if List.member label options then
+        { options = options, picked = label }
 
     else
-        { labels = labels, picked = Nothing }
+        { options = options, picked = picked }
 
 
 nextQuestion : Survey -> Survey
@@ -86,14 +80,14 @@ previousQuestion { previous, current, next } =
             Survey (List.reverse rest) newCurrent (List.append [ current ] next)
 
 
-currentQuestionNo : Survey -> Int
-currentQuestionNo s =
+currentQuestionNumber : Survey -> Int
+currentQuestionNumber s =
     List.length s.previous + 1
 
 
 surveyLength : Survey -> Int
 surveyLength s =
-    currentQuestionNo s + List.length s.next
+    currentQuestionNumber s + List.length s.next
 
 
 
@@ -119,7 +113,11 @@ question1 =
 question2 : Question
 question2 =
     { text = "Have you ever tried Elm?"
-    , answer = YesNoAnswer False
+    , answer =
+        SelectAnswer
+            { options = [ "Yes", "No" ]
+            , picked = "Yes"
+            }
     }
 
 
@@ -127,9 +125,9 @@ question3 : Question
 question3 =
     { text = "If so, for how many years?"
     , answer =
-        RadioAnswer
-            { labels = [ Label "0 - 1", Label "2 - 3", Label "3 - 5", Label "5 - 8" ]
-            , picked = Nothing
+        SelectAnswer
+            { options = [ "0 - 1", "2 - 3", "3 - 5", "5 - 8" ]
+            , picked = "0 - 1"
             }
     }
 
@@ -137,26 +135,27 @@ question3 =
 question4 : Question
 question4 =
     { text = "If no, will you give it a try?"
-    , answer = YesNoAnswer False
+    , answer =
+        SelectAnswer
+            { options = [ "Yes", "No" ]
+            , picked = "Yes"
+            }
     }
 
 
 question5 : Question
 question5 =
-    { text = "Did you enjoy the talk? :)"
-    , answer = YesNoAnswer False
+    { text = "How did you enjoy the 'Why Elm is a delightful language to learn FP?' talk?"
+    , answer =
+        SelectAnswer
+            { options = [ "5 (it was great)", "4", "3", "2", "1 (it was awful)" ]
+            , picked = "5 (it was great)"
+            }
     }
 
 
 question6 : Question
 question6 =
-    { text = "If so, give me a follow for more content!"
-    , answer = GoToURLButton "http://twitter.com/kajetansw" "Twitter @kajetansw"
-    }
-
-
-question7 : Question
-question7 =
-    { text = "If you have any, please give me some feedback (optional)"
+    { text = "Do you have any feedback?"
     , answer = TextAnswer ""
     }

@@ -1,9 +1,10 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, a, button, div, span, text)
-import Html.Attributes exposing (class, href, target)
+import Html exposing (Html, button, div, option, select, span, text, textarea)
+import Html.Attributes exposing (class, selected, value)
 import Html.Events exposing (onClick)
+import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
 
 
@@ -11,6 +12,7 @@ import Survey exposing (..)
 -- MAIN
 
 
+main : Program () Model Msg
 main =
     Browser.sandbox { init = init, update = update, view = view }
 
@@ -27,7 +29,7 @@ init : Model
 init =
     { previous = []
     , current = question1
-    , next = [ question2, question3, question4, question5, question6, question7 ]
+    , next = [ question2, question3, question4, question5, question6 ]
     }
 
 
@@ -38,6 +40,7 @@ init =
 type Msg
     = NextQuestion
     | PreviousQuestion
+    | SelectAnswerChanged String
 
 
 update : Msg -> Model -> Model
@@ -48,6 +51,21 @@ update msg model =
 
         PreviousQuestion ->
             previousQuestion model
+
+        SelectAnswerChanged value ->
+            case model.current.answer of
+                SelectAnswer sa ->
+                    let
+                        currentQuestion =
+                            model.current
+
+                        updatedAnswer =
+                            SelectAnswer (pickSelectAnswer sa value)
+                    in
+                    { model | current = { currentQuestion | answer = updatedAnswer } }
+
+                _ ->
+                    model
 
 
 
@@ -60,7 +78,7 @@ view model =
         [ div [ class "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center" ]
             [ span [ class "text-base text-gray-500" ] [ currentQuestionNoText model ]
             , span [ class "text-xl inline-block" ] [ text model.current.text ]
-            , viewAnswer model.current.answer
+            , viewAnswer model
             , div [ class "flex flex-row w-full" ]
                 [ button
                     [ onClick PreviousQuestion
@@ -77,33 +95,34 @@ view model =
         ]
 
 
-currentQuestionNoText : Survey -> Html msg
+currentQuestionNoText : Survey -> Html Msg
 currentQuestionNoText s =
-    text ((s |> currentQuestionNo |> String.fromInt) ++ "/" ++ (s |> surveyLength |> String.fromInt))
+    text ((s |> currentQuestionNumber |> String.fromInt) ++ "/" ++ (s |> surveyLength |> String.fromInt))
 
 
-viewAnswer : Answer -> Html msg
-viewAnswer answer =
-    case answer of
+viewAnswer : Survey -> Html Msg
+viewAnswer s =
+    case s.current.answer of
         CheckboxAnswer ls ->
             div [] []
 
-        RadioAnswer radio ->
-            div [] []
+        SelectAnswer answer ->
+            let
+                isSelected : String -> Bool
+                isSelected option = answer.picked == option
+
+                optionToHtml : String -> Html Msg
+                optionToHtml txt =
+                    option [ value txt, selected (isSelected txt) ] [ text txt ]
+            in
+            select
+                [ class "block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                , onChange (\val -> SelectAnswerChanged val)
+                ]
+                (List.map optionToHtml answer.options)
 
         TextAnswer text ->
-            div [] []
+            textarea [ class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" ] []
 
         IntegerAnswer labeled ->
             div [] []
-
-        YesNoAnswer bool ->
-            div [] []
-
-        GoToURLButton anchorUrl anchorText ->
-            a
-                [ href anchorUrl
-                , class "bg-blue-500 rounded-md text-white p-2"
-                , target "_blank"
-                ]
-                [ text anchorText ]
