@@ -24,6 +24,7 @@
     "tailwindcss": "^1.9.6"
   },
   "devDependencies": {
+    "@tailwindcss/custom-forms": "^0.2.1",
     "copyfiles": "^2.4.0",
     "elm-format": "^0.8.4",
     "elm-live": "^4.0.2",

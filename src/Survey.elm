@@ -51,6 +51,14 @@ type alias Labeled v =
 -- FUNCTIONS
 
 
+--pickCheckboxAnswer : String -> Bool -> (List (Labeled Bool)) -> (List (Labeled Bool))
+--pickCheckboxAnswer text value labeledValues =
+--    let
+--        filteredLabeledValues : List (Labeled Bool)
+--        filteredLabeledValues = List.filter (\l -> l.text == text) labeledValues
+--    in
+
+
 pickSelectAnswer : SelectAnswer_ -> String -> SelectAnswer_
 pickSelectAnswer { options, picked } label =
     if List.member label options then

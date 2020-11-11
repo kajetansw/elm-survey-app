@@ -1,13 +1,11 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, option, select, span, text, textarea)
-import Html.Attributes exposing (class, selected, value)
+import Html exposing (Html, button, div, option, select, span, text, textarea, label, input)
+import Html.Attributes exposing (class, selected, value, type_)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
-import Svg as SVG
-import Svg.Attributes as SVGA
 
 
 
@@ -122,7 +120,12 @@ viewAnswer : Survey -> Html Msg
 viewAnswer s =
     case s.current.answer of
         CheckboxAnswer ls ->
-            div [] []
+            div [ class "flex mt-6" ]
+                [ label [ class "flex items-center" ]
+                    [ input [ type_ "checkbox", class "form-checkbox" ] []
+                    , span [ class "ml-2" ] [ text "I agree" ]
+                    ]
+                ]
 
         SelectAnswer answer ->
             let
@@ -136,16 +139,15 @@ viewAnswer s =
             in
             div [ class "inline-block relative w-full" ]
                 [ select
-                    [ class "block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                    [ class "form-select block w-full mt-1"
                     , onChange (\val -> SelectAnswerChanged val)
                     ]
                     (List.map optionToHtml answer.options)
-                , viewDropdownArrow
                 ]
 
         TextAnswer txt ->
             textarea
-                [ class "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                [ class "form-textarea w-full"
                 , onChange (\val -> TextAnswerChanged val)
                 ]
                 [ text txt ]
@@ -153,10 +155,3 @@ viewAnswer s =
         IntegerAnswer labeled ->
             div [] []
 
-
-viewDropdownArrow : Html Msg
-viewDropdownArrow =
-    div [ class "pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700" ]
-        [ SVG.svg [ SVGA.class "fill-current h-4 w-4", SVGA.viewBox "0 0 20 20" ]
-            [ SVG.path [ SVGA.d "M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" ] [] ]
-        ]
