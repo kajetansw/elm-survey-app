@@ -71,6 +71,32 @@ suite =
                     in
                     Expect.equal (S.previousQuestion testSurvey) testSurvey
             ]
+        , describe "pickCheckboxAnswer"
+            [ test "should update correct labeled value" <|
+                \_ ->
+                    let
+                        inputLabeledList : List (Labeled Bool)
+                        inputLabeledList =
+                            [ { text = "test1", value = False }
+                            , { text = "test2", value = False }
+                            , { text = "test3", value = False }
+                            ]
+
+                        testText =
+                            "test2"
+
+                        testValue =
+                            True
+
+                        outputLabeledList : List (Labeled Bool)
+                        outputLabeledList =
+                            [ { text = "test1", value = False }
+                            , { text = "test2", value = True }
+                            , { text = "test3", value = False }
+                            ]
+                    in
+                    Expect.equal (S.pickCheckboxAnswer testText testValue inputLabeledList) outputLabeledList
+            ]
         ]
 
 
@@ -88,21 +114,14 @@ testQuestion1 =
 
 testQuestion2 : Question
 testQuestion2 =
-    { text = "TestQuestion2"
-    , answer = YesNoAnswer False
-    }
-
-
-testQuestion3 : Question
-testQuestion3 =
     { text = "TestQuestion3"
     , answer =
         TextAnswer "Test"
     }
 
 
-testQuestion4 : Question
-testQuestion4 =
+testQuestion3 : Question
+testQuestion3 =
     { text = "TestQuestion3"
     , answer =
         IntegerAnswer (Just 1)

@@ -51,12 +51,18 @@ type alias Labeled v =
 -- FUNCTIONS
 
 
---pickCheckboxAnswer : String -> Bool -> (List (Labeled Bool)) -> (List (Labeled Bool))
---pickCheckboxAnswer text value labeledValues =
---    let
---        filteredLabeledValues : List (Labeled Bool)
---        filteredLabeledValues = List.filter (\l -> l.text == text) labeledValues
---    in
+pickCheckboxAnswer : String -> Bool -> List (Labeled Bool) -> List (Labeled Bool)
+pickCheckboxAnswer text value labeledValues =
+    let
+        updateLabeled : Labeled Bool -> List (Labeled Bool) -> List (Labeled Bool)
+        updateLabeled curr acc =
+            if curr.text == text then
+                { curr | value = value } :: acc
+
+            else
+                curr :: acc
+    in
+    List.foldr updateLabeled [] labeledValues
 
 
 pickSelectAnswer : SelectAnswer_ -> String -> SelectAnswer_

@@ -1,8 +1,8 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, option, select, span, text, textarea, label, input)
-import Html.Attributes exposing (class, selected, value, type_)
+import Html exposing (Html, button, div, input, label, option, select, span, text, textarea)
+import Html.Attributes exposing (class, selected, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
@@ -154,4 +154,3 @@ viewAnswer s =
 
         IntegerAnswer labeled ->
             div [] []
-
