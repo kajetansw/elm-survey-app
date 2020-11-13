@@ -24,7 +24,7 @@ type Answer
     = CheckboxAnswer (List (Labeled Bool))
     | SelectAnswer SelectAnswer_
     | TextAnswer String
-    | IntegerAnswer (Maybe Int)
+    | RateAnswer Int (Maybe Int)
 
 
 type alias AnchorURL =
@@ -161,15 +161,12 @@ question5 : Question
 question5 =
     { text = "How did you enjoy the 'Why Elm is a delightful language to learn FP?' talk?"
     , answer =
-        SelectAnswer
-            { options = [ "5 (it was great)", "4", "3", "2", "1 (it was awful)" ]
-            , picked = "5 (it was great)"
-            }
+        RateAnswer 5 Nothing
     }
 
 
 question6 : Question
 question6 =
-    { text = "Do you have any feedback?"
+    { text = "Write down any feedback you have!"
     , answer = TextAnswer ""
     }

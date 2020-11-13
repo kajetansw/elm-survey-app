@@ -124,5 +124,5 @@ testQuestion3 : Question
 testQuestion3 =
     { text = "TestQuestion3"
     , answer =
-        IntegerAnswer (Just 1)
+        RateAnswer 5 Nothing
     }

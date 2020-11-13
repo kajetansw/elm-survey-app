@@ -1,8 +1,8 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, input, label, option, p, select, span, text, textarea)
-import Html.Attributes exposing (checked, class, selected, type_, value, rows)
+import Html exposing (Html, button, div, img, input, label, option, p, select, span, text, textarea)
+import Html.Attributes exposing (checked, class, rows, selected, src, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
@@ -43,6 +43,7 @@ type Msg
     | SelectAnswerChanged String
     | TextAnswerChanged String
     | CheckboxAnswerChanged String Bool
+    | RateAnswerChanged Int
 
 
 update : Msg -> Model -> Model
@@ -71,7 +72,7 @@ update msg model =
 
         TextAnswerChanged value ->
             case model.current.answer of
-                TextAnswer txt ->
+                TextAnswer _ ->
                     let
                         currentQuestion =
                             model.current
@@ -93,6 +94,28 @@ update msg model =
 
                         updatedAnswer =
                             CheckboxAnswer (pickCheckboxAnswer txt value ls)
+                    in
+                    { model | current = { currentQuestion | answer = updatedAnswer } }
+
+                _ ->
+                    model
+
+        RateAnswerChanged rate ->
+            case model.current.answer of
+                RateAnswer range _ ->
+                    let
+                        currentQuestion =
+                            model.current
+
+                        updatedRate =
+                            if rate >= 1 && rate <= range then
+                                Just rate
+
+                            else
+                                Nothing
+
+                        updatedAnswer =
+                            RateAnswer range updatedRate
                     in
                     { model | current = { currentQuestion | answer = updatedAnswer } }
 
@@ -197,5 +220,37 @@ viewAnswer s =
                 ]
                 [ text txt ]
 
-        IntegerAnswer labeled ->
-            div [] []
+        RateAnswer range rate ->
+            let
+                rates : List Int
+                rates =
+                    List.range 1 range
+
+                rateToHtml : List (Html Msg)
+                rateToHtml =
+                    case rate of
+                        Just rateInt ->
+                            List.map
+                                (\r ->
+                                    if r <= rateInt && List.member rateInt rates then
+                                        img
+                                            [ src "./assets/star-on.png"
+                                            , class "cursor-pointer"
+                                            , onClick (RateAnswerChanged r)
+                                            ]
+                                            []
+
+                                    else
+                                        img
+                                            [ src "./assets/star-off.png"
+                                            , class "cursor-pointer"
+                                            , onClick (RateAnswerChanged r)
+                                            ]
+                                            []
+                                )
+                                rates
+
+                        _ ->
+                            List.map (\r -> img [ src "./assets/star-off.png", class "cursor-pointer", onClick (RateAnswerChanged r) ] []) rates
+            in
+            div [ class "flex flex-row" ] rateToHtml

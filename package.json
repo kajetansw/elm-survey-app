@@ -12,7 +12,7 @@
     "build": "yarn build:css && yarn build:elm && yarn copy-index",
     "build:css": "tailwind build styles.css -o main.css",
     "build:elm": "elm make src/Main.elm --output=dist/app.js --optimize",
-    "copy-index": "copyfiles index.html dist/ && copyfiles main.css dist/",
+    "copy-index": "copyfiles index.html dist/ && copyfiles main.css dist/ && copyfiles ./assets/* dist/",
     "format": "elm-format src/",
     "start": "yarn build:css && elm-live src/Main.elm -- --output=app.js",
     "test": "elm-test"
