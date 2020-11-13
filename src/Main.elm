@@ -1,8 +1,8 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, input, label, option, select, span, text, textarea)
-import Html.Attributes exposing (checked, class, selected, type_, value)
+import Html exposing (Html, button, div, input, label, option, p, select, span, text, textarea)
+import Html.Attributes exposing (checked, class, selected, type_, value, rows)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
@@ -106,20 +106,23 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ class "w-full max-w-md" ]
-        [ div [ class "bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col items-center" ]
-            [ span [ class "text-base text-gray-500" ] [ currentQuestionNoText model ]
-            , span [ class "text-xl inline-block" ] [ text model.current.text ]
-            , viewAnswer model
-            , div [ class "flex flex-row w-full" ]
+    div [ class "w-full h-full flex flex-col items-center" ]
+        [ div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
+            [ div [ class "flex flex-col items-center" ]
+                [ span [ class "text-4xl text-gray-500 mb-10" ] [ currentQuestionNoText model ]
+                , p [ class "text-6xl inline-block text-center" ] [ text model.current.text ]
+                ]
+            , div [ class "text-5xl flex flex-col items-center w-full" ]
+                [ viewAnswer model ]
+            , div [ class "flex flex-row w-full text-4xl" ]
                 [ button
                     [ onClick PreviousQuestion
-                    , class "bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 mr-2 rounded"
+                    , class "bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded"
                     ]
                     [ text "◀ Previous" ]
                 , button
                     [ onClick NextQuestion
-                    , class "bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-2 rounded"
+                    , class "bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded"
                     ]
                     [ text "Next ▶" ]
                 ]
@@ -154,10 +157,10 @@ viewAnswer s =
                 labeledValuesToHtml =
                     List.map
                         (\l ->
-                            label [ class "flex items-center" ]
+                            label [ class "flex items-center mb-12" ]
                                 [ input
                                     [ type_ "checkbox"
-                                    , class "form-checkbox"
+                                    , class "form-checkbox border-gray-700 mr-6 rounded-md"
                                     , checked (isChecked l.text)
                                     , onClick (CheckboxAnswerChanged l.text (not l.value))
                                     ]
@@ -180,17 +183,16 @@ viewAnswer s =
                 optionToHtml txt =
                     option [ value txt, selected (isSelected txt) ] [ text txt ]
             in
-            div [ class "inline-block relative w-full" ]
-                [ select
-                    [ class "form-select block w-full mt-1"
-                    , onChange (\val -> SelectAnswerChanged val)
-                    ]
-                    (List.map optionToHtml answer.options)
+            select
+                [ class "form-select w-9/12 mt-1 text-5xl"
+                , onChange (\val -> SelectAnswerChanged val)
                 ]
+                (List.map optionToHtml answer.options)
 
         TextAnswer txt ->
             textarea
-                [ class "form-textarea w-full"
+                [ class "form-textarea w-full text-5xl"
+                , rows 8
                 , onChange (\val -> TextAnswerChanged val)
                 ]
                 [ text txt ]
