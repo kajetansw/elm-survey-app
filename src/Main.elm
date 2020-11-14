@@ -7,6 +7,7 @@ import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey.Core exposing (..)
 import Survey.Questions exposing (..)
+import Survey.Validators exposing (..)
 
 
 
@@ -141,12 +142,13 @@ view model =
             , div [ class "flex flex-row w-full text-4xl" ]
                 [ button
                     [ onClick PreviousQuestion
-                    , class "bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded"
+                    , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded " ++ buttonPreviousOpacityStyle model)
                     ]
                     [ text "◀ Previous" ]
                 , button
                     [ onClick NextQuestion
-                    , class "bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded"
+                    , class ("bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded " ++ buttonNextOpacityStyle model)
+                    , disabled (isErr (validateAnswer model.current.answer))
                     ]
                     [ text "Next ▶" ]
                 ]
@@ -260,3 +262,41 @@ viewAnswer s =
                             List.map (\r -> img [ src "./assets/star-off.png", class "cursor-pointer", onClick (RateAnswerChanged r) ] []) rates
             in
             div [ class "flex flex-row" ] rateToHtml
+
+
+buttonNextOpacityStyle : Model -> String
+buttonNextOpacityStyle model =
+    let
+        toBeDisabled : Bool
+        toBeDisabled =
+            isErr (validateAnswer model.current.answer) || List.isEmpty model.next
+    in
+    if toBeDisabled then
+        "bg-opacity-50 text-opacity-50"
+
+    else
+        ""
+
+
+buttonPreviousOpacityStyle : Model -> String
+buttonPreviousOpacityStyle model =
+    let
+        toBeDisabled : Bool
+        toBeDisabled =
+            List.isEmpty model.previous
+    in
+    if toBeDisabled then
+        "bg-opacity-50 text-opacity-50"
+
+    else
+        ""
+
+
+isErr : Result a b -> Bool
+isErr r =
+    case r of
+        Ok _ ->
+            False
+
+        Err _ ->
+            True
