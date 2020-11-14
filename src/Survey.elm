@@ -37,7 +37,8 @@ type alias AnchorText =
 
 type alias SelectAnswer_ =
     { options : List String
-    , picked : String
+    , picked : Maybe String
+    , default : String
     }
 
 
@@ -66,12 +67,12 @@ pickCheckboxAnswer text value labeledValues =
 
 
 pickSelectAnswer : SelectAnswer_ -> String -> SelectAnswer_
-pickSelectAnswer { options, picked } label =
-    if List.member label options then
-        { options = options, picked = label }
+pickSelectAnswer sAnswer label =
+    if List.member label sAnswer.options then
+        { sAnswer | picked = Just label }
 
     else
-        { options = options, picked = picked }
+        sAnswer
 
 
 nextQuestion : Survey -> Survey
@@ -130,43 +131,33 @@ question2 =
     , answer =
         SelectAnswer
             { options = [ "Yes", "No" ]
-            , picked = "Yes"
+            , picked = Nothing
+            , default = "(Select your answer)"
             }
     }
 
-
 question3 : Question
 question3 =
-    { text = "If so, for how many years?"
+    { text = "If no, will you give it a try?"
     , answer =
         SelectAnswer
-            { options = [ "0 - 1", "2 - 3", "3 - 5", "5 - 8" ]
-            , picked = "0 - 1"
+            { options = [ "Definitely!", "Maybe", "Meh..." ]
+            , picked = Nothing
+            , default = "(Select your answer)"
             }
     }
 
 
 question4 : Question
 question4 =
-    { text = "If no, will you give it a try?"
-    , answer =
-        SelectAnswer
-            { options = [ "Yes", "No" ]
-            , picked = "Yes"
-            }
-    }
-
-
-question5 : Question
-question5 =
     { text = "How did you enjoy the 'Why Elm is a delightful language to learn FP?' talk?"
     , answer =
         RateAnswer 5 Nothing
     }
 
 
-question6 : Question
-question6 =
+question5 : Question
+question5 =
     { text = "Write down any feedback you have!"
     , answer = TextAnswer ""
     }

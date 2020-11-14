@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, img, input, label, option, p, select, span, text, textarea)
-import Html.Attributes exposing (checked, class, rows, selected, src, type_, value)
+import Html.Attributes exposing (checked, class, disabled, rows, selected, src, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey exposing (..)
@@ -29,7 +29,7 @@ init : Model
 init =
     { previous = []
     , current = question1
-    , next = [ question2, question3, question4, question5, question6 ]
+    , next = [ question2, question3, question4, question5 ]
     }
 
 
@@ -200,17 +200,22 @@ viewAnswer s =
             let
                 isSelected : String -> Bool
                 isSelected option =
-                    answer.picked == option
+                    case answer.picked of
+                        Nothing ->
+                            option == answer.default
+
+                        Just p ->
+                            option == p
 
                 optionToHtml : String -> Html Msg
                 optionToHtml txt =
-                    option [ value txt, selected (isSelected txt) ] [ text txt ]
+                    option [ value txt, selected (isSelected txt), disabled (txt == answer.default) ] [ text txt ]
             in
             select
-                [ class "form-select w-9/12 mt-1 text-5xl"
+                [ class "form-select w-10/12 mt-1 text-5xl"
                 , onChange (\val -> SelectAnswerChanged val)
                 ]
-                (List.map optionToHtml answer.options)
+                (List.map optionToHtml (answer.default :: answer.options))
 
         TextAnswer txt ->
             textarea
