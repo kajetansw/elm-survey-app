@@ -2,7 +2,7 @@ module SurveySpec exposing (..)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
-import Survey as S exposing (..)
+import Survey.Core as S exposing (..)
 import Test exposing (..)
 
 

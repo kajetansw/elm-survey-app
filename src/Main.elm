@@ -5,7 +5,8 @@ import Html exposing (Html, button, div, img, input, label, option, p, select, s
 import Html.Attributes exposing (checked, class, disabled, rows, selected, src, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
-import Survey exposing (..)
+import Survey.Core exposing (..)
+import Survey.Questions exposing (..)
 
 
 
