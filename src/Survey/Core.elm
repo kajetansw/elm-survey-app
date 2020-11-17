@@ -99,3 +99,13 @@ currentQuestionNumber s =
 surveyLength : Survey -> Int
 surveyLength s =
     currentQuestionNumber s + List.length s.next
+
+
+isLastQuestion : Survey -> Bool
+isLastQuestion s =
+    s.next == []
+
+
+toList : Survey -> List Question
+toList s =
+    List.append (List.append s.previous [s.current]) s.next

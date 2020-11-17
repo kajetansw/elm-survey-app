@@ -8,12 +8,14 @@
     "elm-format": "elm-format",
     "elm-live": "elm-live",
     "elm-test": "elm-test",
+    "elm-graphql": "elm-graphql",
     "tailwind": "tailwind",
     "build": "yarn build:css && yarn build:elm && yarn copy-index",
     "build:css": "tailwind build styles.css -o main.css",
     "build:elm": "elm make src/Main.elm --output=dist/app.js --optimize",
     "copy-index": "copyfiles index.html dist/ && copyfiles main.css dist/ && copyfiles ./assets/* dist/",
     "format": "elm-format src/",
+    "generate-api": "elm-graphql https://graphql.fauna.com/graphql --base SurveyAPI --output src --header \"Authorization: Bearer fnAD64d0TEACAeBkNT2vAa_uxYRONwTEVAA7Lsv2\"",
     "start": "yarn build:css && elm-live src/Main.elm -- --output=app.js",
     "test": "elm-test"
   },
@@ -24,6 +26,7 @@
     "tailwindcss": "^1.9.6"
   },
   "devDependencies": {
+    "@dillonkearns/elm-graphql": "^4.0.5",
     "@tailwindcss/custom-forms": "^0.2.1",
     "copyfiles": "^2.4.0",
     "elm-format": "^0.8.4",

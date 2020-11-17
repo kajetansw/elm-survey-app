@@ -1,22 +1,33 @@
 module Main exposing (..)
 
 import Browser
+import Graphql.Http
+import Graphql.Operation exposing (RootMutation, RootQuery)
+import Graphql.SelectionSet exposing (SelectionSet)
 import Html exposing (Html, button, div, img, input, label, option, p, select, span, text, textarea)
 import Html.Attributes exposing (checked, class, disabled, rows, selected, src, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import Survey.Core exposing (..)
 import Survey.Questions exposing (..)
+import Survey.Serialize exposing (..)
 import Survey.Validators exposing (..)
+import SurveyAPI.Mutation as Mutation
+import SurveyAPI.Object.Survey as SurveyDocument
+import SurveyAPI.Scalar as Scalar
 
 
 
 -- MAIN
 
 
-main : Program () Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.element
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
 
 
 
@@ -27,12 +38,14 @@ type alias Model =
     Survey
 
 
-init : Model
-init =
-    { previous = []
-    , current = question1
-    , next = [ question2, question3, question4, question5 ]
-    }
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { previous = []
+      , current = question1
+      , next = [ question2, question3, question4, question5 ]
+      }
+    , Cmd.none
+    )
 
 
 
@@ -46,16 +59,18 @@ type Msg
     | TextAnswerChanged String
     | CheckboxAnswerChanged String Bool
     | RateAnswerChanged Int
+    | SubmitSurvey Model
+    | GotResponse (Result (Graphql.Http.Error Scalar.Id) Scalar.Id)
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NextQuestion ->
-            nextQuestion model
+            ( nextQuestion model, Cmd.none )
 
         PreviousQuestion ->
-            previousQuestion model
+            ( previousQuestion model, Cmd.none )
 
         SelectAnswerChanged value ->
             case model.current.answer of
@@ -67,10 +82,10 @@ update msg model =
                         updatedAnswer =
                             SelectAnswer (pickSelectAnswer sa value)
                     in
-                    { model | current = { currentQuestion | answer = updatedAnswer } }
+                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
 
                 _ ->
-                    model
+                    ( model, Cmd.none )
 
         TextAnswerChanged value ->
             case model.current.answer of
@@ -82,10 +97,10 @@ update msg model =
                         updatedAnswer =
                             TextAnswer value
                     in
-                    { model | current = { currentQuestion | answer = updatedAnswer } }
+                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
 
                 _ ->
-                    model
+                    ( model, Cmd.none )
 
         CheckboxAnswerChanged txt value ->
             case model.current.answer of
@@ -97,10 +112,10 @@ update msg model =
                         updatedAnswer =
                             CheckboxAnswer (pickCheckboxAnswer txt value ls)
                     in
-                    { model | current = { currentQuestion | answer = updatedAnswer } }
+                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
 
                 _ ->
-                    model
+                    ( model, Cmd.none )
 
         RateAnswerChanged rate ->
             case model.current.answer of
@@ -119,10 +134,31 @@ update msg model =
                         updatedAnswer =
                             RateAnswer range updatedRate
                     in
-                    { model | current = { currentQuestion | answer = updatedAnswer } }
+                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
 
                 _ ->
-                    model
+                    ( model, Cmd.none )
+
+        SubmitSurvey m ->
+            ( m, makeRequest m )
+
+        GotResponse responseResult ->
+            case responseResult of
+                _ ->
+                    ( model, Cmd.none )
+
+
+mutation : Survey -> SelectionSet Scalar.Id RootMutation
+mutation s =
+    Mutation.createSurvey { data = surveyToInput s } SurveyDocument.id_
+
+
+makeRequest : Survey -> Cmd Msg
+makeRequest s =
+    mutation s
+        |> Graphql.Http.mutationRequest "https://graphql.fauna.com/graphql"
+        |> Graphql.Http.withHeader "Authorization" "Bearer fnAD64d0TEACAeBkNT2vAa_uxYRONwTEVAA7Lsv2"
+        |> Graphql.Http.send (\r -> GotResponse r)
 
 
 
@@ -140,20 +176,37 @@ view model =
             , div [ class "text-5xl flex flex-col items-center w-full" ]
                 [ viewAnswer model ]
             , div [ class "flex flex-row w-full text-4xl" ]
-                [ button
-                    [ onClick PreviousQuestion
-                    , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded " ++ buttonPreviousOpacityStyle model)
+                (questionControlButtons model)
+            ]
+        ]
+
+
+questionControlButtons : Model -> List (Html Msg)
+questionControlButtons model =
+    let
+        nextOrSubmitButton =
+            if isLastQuestion model then
+                button
+                    [ onClick (SubmitSurvey model)
+                    , class "bg-green-300 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded"
                     ]
-                    [ text "◀ Previous" ]
-                , button
+                    [ text "Submit ✔" ]
+
+            else
+                button
                     [ onClick NextQuestion
                     , class ("bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded " ++ buttonNextOpacityStyle model)
                     , disabled (isErr (validateAnswer model.current.answer))
                     ]
                     [ text "Next ▶" ]
-                ]
-            ]
+    in
+    [ button
+        [ onClick PreviousQuestion
+        , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded " ++ buttonPreviousOpacityStyle model)
         ]
+        [ text "◀ Previous" ]
+    , nextOrSubmitButton
+    ]
 
 
 currentQuestionNoText : Survey -> Html Msg
@@ -300,3 +353,12 @@ isErr r =
 
         Err _ ->
             True
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
