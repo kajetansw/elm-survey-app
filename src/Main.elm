@@ -226,7 +226,7 @@ questionControlButtons model =
             else
                 button
                     [ onClick NextQuestion
-                    , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded " ++ buttonNextOpacityStyle model)
+                    , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded " ++ buttonDisabledStyle model)
                     , disabled (isErr (validateAnswer model.survey.current.answer))
                     ]
                     [ text "Next ▶" ]
@@ -355,15 +355,15 @@ viewAnswer s =
             div [ class "flex flex-row" ] rateToHtml
 
 
-buttonNextOpacityStyle : Model -> String
-buttonNextOpacityStyle model =
+buttonDisabledStyle : Model -> String
+buttonDisabledStyle model =
     let
         toBeDisabled : Bool
         toBeDisabled =
             isErr (validateAnswer model.survey.current.answer) || List.isEmpty model.survey.next
     in
     if toBeDisabled then
-        "bg-opacity-25 text-opacity-25"
+        "bg-opacity-25 text-opacity-25 pointer-events-none"
 
     else
         ""
