@@ -1,0 +1,9 @@
+type Survey {
+	date: Time!
+	questions: [Question]!
+}
+
+type Question @embedded {
+	text: String!
+	answer: String!
+}

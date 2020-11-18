@@ -4,8 +4,8 @@ import Browser
 import Graphql.Http
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet)
-import Html exposing (Html, button, div, img, input, label, option, p, select, span, text, textarea)
-import Html.Attributes exposing (checked, class, disabled, rows, selected, src, type_, value)
+import Html exposing (Html, button, div, img, input, label, main_, option, p, select, span, text, textarea, a)
+import Html.Attributes exposing (checked, class, disabled, rows, selected, src, style, type_, value, href, target)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import RemoteData exposing (RemoteData(..))
@@ -176,23 +176,40 @@ makeRequest model =
 
 view : Model -> Html Msg
 view model =
-    case model.submitResult of
-        Success _ ->
-            div [] [ text "Thank you for submitting!" ]
-
-        _ ->
-            div [ class "w-full h-full flex flex-col items-center" ]
-                [ div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
-                    [ div [ class "flex flex-col items-center" ]
-                        [ span [ class "text-4xl text-gray-500 mb-10" ] [ currentQuestionNoText model.survey ]
-                        , p [ class "text-6xl inline-block text-center" ] [ text model.survey.current.text ]
+    let
+        mainContent =
+            case model.submitResult of
+                Success _ ->
+                    div
+                        [ style "font-family" "'Comfortaa', cursive"
+                        , class "flex flex-col items-center text-green-600 text-6xl font-semibold items-center justify-center transition-all duration-1000 ease-in-out"
                         ]
-                    , div [ class "text-5xl flex flex-col items-center w-full" ]
-                        [ viewAnswer model.survey ]
-                    , div [ class "flex flex-row w-full text-4xl" ]
-                        (questionControlButtons model)
-                    ]
-                ]
+                        [ p [] [ text "Thank you for" ]
+                        , p [] [ text "submitting!" ]
+                        , p [ class "transform scale-150 mt-12" ] [ text "✅" ]
+                        ]
+
+                _ ->
+                    div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
+                        [ div [ class "flex flex-col items-center" ]
+                            [ span [ class "text-4xl text-gray-500 mb-10" ] [ currentQuestionNoText model.survey ]
+                            , p [ class "text-6xl inline-block text-center" ] [ text model.survey.current.text ]
+                            ]
+                        , div [ class "text-5xl flex flex-col items-center w-full" ]
+                            [ viewAnswer model.survey ]
+                        , div [ class "flex flex-row w-full text-4xl" ]
+                            (questionControlButtons model)
+                        ]
+    in
+    main_ [ class "w-full h-full flex flex-col items-center justify-center text-xl relative" ]
+        [ mainContent
+        , p [ class "text-gray-600 mb-2 absolute bottom-0" ]
+            [ text "Made by "
+            , a [ class "underline", href "https://twitter.com/kajetansw", target "_blank" ] [ text "@kajetansw" ]
+            , text " with Elm, TailwindCSS and FaunaDB. "
+            , a [ class "underline", href "https://github.com/kajetansw/elm-survey-app", target "_blank" ] [ text "Source code" ]
+            ]
+        ]
 
 
 questionControlButtons : Model -> List (Html Msg)
