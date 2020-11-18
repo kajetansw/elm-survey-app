@@ -40,12 +40,12 @@ questionToInput q =
     { text = q.text, answer = answer }
 
 
-surveyToInput : Survey -> SurveyInput
-surveyToInput s =
+surveyToInput : String -> Survey -> SurveyInput
+surveyToInput timeString s =
     let
         questions : List (Maybe QuestionInput)
         questions =
             List.map (\q -> Just (questionToInput q)) (toList s)
     in
-    { date = Date "2020-06-06", questions = questions }
+    { date = Time timeString, questions = questions }
 

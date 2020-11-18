@@ -54,7 +54,7 @@ buildSurveyInput required =
 
 
 type alias SurveyInputRequiredFields =
-    { date : SurveyAPI.ScalarCodecs.Date
+    { date : SurveyAPI.ScalarCodecs.Time
     , questions : List (Maybe QuestionInput)
     }
 
@@ -62,7 +62,7 @@ type alias SurveyInputRequiredFields =
 {-| Type for the SurveyInput input object.
 -}
 type alias SurveyInput =
-    { date : SurveyAPI.ScalarCodecs.Date
+    { date : SurveyAPI.ScalarCodecs.Time
     , questions : List (Maybe QuestionInput)
     }
 
@@ -72,4 +72,4 @@ type alias SurveyInput =
 encodeSurveyInput : SurveyInput -> Value
 encodeSurveyInput input =
     Encode.maybeObject
-        [ ( "date", (SurveyAPI.ScalarCodecs.codecs |> SurveyAPI.Scalar.unwrapEncoder .codecDate) input.date |> Just ), ( "questions", (encodeQuestionInput |> Encode.maybe |> Encode.list) input.questions |> Just ) ]
+        [ ( "date", (SurveyAPI.ScalarCodecs.codecs |> SurveyAPI.Scalar.unwrapEncoder .codecTime) input.date |> Just ), ( "questions", (encodeQuestionInput |> Encode.maybe |> Encode.list) input.questions |> Just ) ]

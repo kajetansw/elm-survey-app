@@ -139,7 +139,7 @@ update msg model =
                     ( model, Cmd.none )
 
         SubmitSurvey m ->
-            ( m, makeRequest m.survey )
+            ( m, makeRequest m )
 
         GotResponse submitResult ->
             ( { model | submitResult = submitResult }, Cmd.none )
@@ -157,16 +157,16 @@ updateCurrentAnswer newAnswer model =
     { model | survey = { survey | current = { currentQuestion | answer = newAnswer } } }
 
 
-mutation : Survey -> SelectionSet Scalar.Id RootMutation
-mutation s =
-    Mutation.createSurvey { data = surveyToInput s } SurveyDocument.id_
+mutation : Model -> SelectionSet Scalar.Id RootMutation
+mutation model =
+    Mutation.createSurvey { data = surveyToInput model.currentTime model.survey } SurveyDocument.id_
 
 
-makeRequest : Survey -> Cmd Msg
-makeRequest s =
-    mutation s
+makeRequest : Model -> Cmd Msg
+makeRequest model =
+    mutation model
         |> Graphql.Http.mutationRequest "https://graphql.fauna.com/graphql"
-        |> Graphql.Http.withHeader "Authorization" "Bearer fnAD64d0TEACAeBkNT2vAa_uxYRONwTEVAA7Lsv2"
+        |> Graphql.Http.withHeader "Authorization" "Bearer fnAD68qBMJACB2CL8qqCRoQpRcviQQSbl27YO3pj"
         |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 

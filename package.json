@@ -15,7 +15,7 @@
     "build:elm": "elm make src/Main.elm --output=dist/app.js --optimize",
     "copy-index": "copyfiles index.html dist/ && copyfiles main.css dist/ && copyfiles ./assets/* dist/",
     "format": "elm-format src/",
-    "generate-api": "elm-graphql https://graphql.fauna.com/graphql --base SurveyAPI --output src --header \"Authorization: Bearer fnAD64d0TEACAeBkNT2vAa_uxYRONwTEVAA7Lsv2\"",
+    "generate-api": "elm-graphql https://graphql.fauna.com/graphql --base SurveyAPI --output src --header \"Authorization: Bearer fnAD68qBMJACB2CL8qqCRoQpRcviQQSbl27YO3pj\"",
     "start": "yarn build:css && elm-live src/Main.elm -- --output=app.js",
     "test": "elm-test"
   },

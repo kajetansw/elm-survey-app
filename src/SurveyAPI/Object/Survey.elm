@@ -33,9 +33,9 @@ ts_ =
     Object.selectionForField "ScalarCodecs.Long" "_ts" [] (SurveyAPI.ScalarCodecs.codecs |> SurveyAPI.Scalar.unwrapCodecs |> .codecLong |> .decoder)
 
 
-date : SelectionSet SurveyAPI.ScalarCodecs.Date SurveyAPI.Object.Survey
+date : SelectionSet SurveyAPI.ScalarCodecs.Time SurveyAPI.Object.Survey
 date =
-    Object.selectionForField "ScalarCodecs.Date" "date" [] (SurveyAPI.ScalarCodecs.codecs |> SurveyAPI.Scalar.unwrapCodecs |> .codecDate |> .decoder)
+    Object.selectionForField "ScalarCodecs.Time" "date" [] (SurveyAPI.ScalarCodecs.codecs |> SurveyAPI.Scalar.unwrapCodecs |> .codecTime |> .decoder)
 
 
 questions :
