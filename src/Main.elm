@@ -8,6 +8,7 @@ import Html exposing (Html, button, div, img, input, label, option, p, select, s
 import Html.Attributes exposing (checked, class, disabled, rows, selected, src, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
+import RemoteData exposing (RemoteData(..))
 import Survey.Core exposing (..)
 import Survey.Questions exposing (..)
 import Survey.Serialize exposing (..)
@@ -35,17 +36,27 @@ main =
 
 
 type alias Model =
-    Survey
+    { survey : Survey
+    , currentTime : String
+    , submitResult : RemoteData (Graphql.Http.Error Scalar.Id) Scalar.Id
+    }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { previous = []
-      , current = question1
-      , next = [ question2, question3, question4, question5 ]
-      }
-    , Cmd.none
-    )
+init : String -> ( Model, Cmd Msg )
+init currentTime =
+    let
+        model : Model
+        model =
+            { survey =
+                { previous = []
+                , current = question1
+                , next = [ question2, question3, question4, question5 ]
+                }
+            , currentTime = currentTime
+            , submitResult = NotAsked
+            }
+    in
+    ( model, Cmd.none )
 
 
 
@@ -60,92 +71,90 @@ type Msg
     | CheckboxAnswerChanged String Bool
     | RateAnswerChanged Int
     | SubmitSurvey Model
-    | GotResponse (Result (Graphql.Http.Error Scalar.Id) Scalar.Id)
+    | GotResponse (RemoteData (Graphql.Http.Error Scalar.Id) Scalar.Id)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NextQuestion ->
-            ( nextQuestion model, Cmd.none )
+            ( { model | survey = nextQuestion model.survey }, Cmd.none )
 
         PreviousQuestion ->
-            ( previousQuestion model, Cmd.none )
+            ( { model | survey = previousQuestion model.survey }, Cmd.none )
 
         SelectAnswerChanged value ->
-            case model.current.answer of
+            case model.survey.current.answer of
                 SelectAnswer sa ->
                     let
-                        currentQuestion =
-                            model.current
-
-                        updatedAnswer =
+                        newAnswer =
                             SelectAnswer (pickSelectAnswer sa value)
                     in
-                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
+                    ( updateCurrentAnswer newAnswer model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         TextAnswerChanged value ->
-            case model.current.answer of
+            case model.survey.current.answer of
                 TextAnswer _ ->
                     let
-                        currentQuestion =
-                            model.current
-
-                        updatedAnswer =
+                        newAnswer =
                             TextAnswer value
                     in
-                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
+                    ( updateCurrentAnswer newAnswer model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         CheckboxAnswerChanged txt value ->
-            case model.current.answer of
+            case model.survey.current.answer of
                 CheckboxAnswer ls ->
                     let
-                        currentQuestion =
-                            model.current
-
-                        updatedAnswer =
+                        newAnswer =
                             CheckboxAnswer (pickCheckboxAnswer txt value ls)
                     in
-                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
+                    ( updateCurrentAnswer newAnswer model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         RateAnswerChanged rate ->
-            case model.current.answer of
+            case model.survey.current.answer of
                 RateAnswer range _ ->
                     let
-                        currentQuestion =
-                            model.current
-
-                        updatedRate =
+                        newRate =
                             if rate >= 1 && rate <= range then
                                 Just rate
 
                             else
                                 Nothing
 
-                        updatedAnswer =
-                            RateAnswer range updatedRate
+                        newAnswer =
+                            RateAnswer range newRate
                     in
-                    ( { model | current = { currentQuestion | answer = updatedAnswer } }, Cmd.none )
+                    ( updateCurrentAnswer newAnswer model, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )
 
         SubmitSurvey m ->
-            ( m, makeRequest m )
+            ( m, makeRequest m.survey )
 
-        GotResponse responseResult ->
-            case responseResult of
-                _ ->
-                    ( model, Cmd.none )
+        GotResponse submitResult ->
+            ( { model | submitResult = submitResult }, Cmd.none )
+
+
+updateCurrentAnswer : Answer -> Model -> Model
+updateCurrentAnswer newAnswer model =
+    let
+        survey =
+            model.survey
+
+        currentQuestion =
+            model.survey.current
+    in
+    { model | survey = { survey | current = { currentQuestion | answer = newAnswer } } }
 
 
 mutation : Survey -> SelectionSet Scalar.Id RootMutation
@@ -158,7 +167,7 @@ makeRequest s =
     mutation s
         |> Graphql.Http.mutationRequest "https://graphql.fauna.com/graphql"
         |> Graphql.Http.withHeader "Authorization" "Bearer fnAD64d0TEACAeBkNT2vAa_uxYRONwTEVAA7Lsv2"
-        |> Graphql.Http.send (\r -> GotResponse r)
+        |> Graphql.Http.send (RemoteData.fromResult >> GotResponse)
 
 
 
@@ -167,25 +176,30 @@ makeRequest s =
 
 view : Model -> Html Msg
 view model =
-    div [ class "w-full h-full flex flex-col items-center" ]
-        [ div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
-            [ div [ class "flex flex-col items-center" ]
-                [ span [ class "text-4xl text-gray-500 mb-10" ] [ currentQuestionNoText model ]
-                , p [ class "text-6xl inline-block text-center" ] [ text model.current.text ]
+    case model.submitResult of
+        Success _ ->
+            div [] [ text "Thank you for submitting!" ]
+
+        _ ->
+            div [ class "w-full h-full flex flex-col items-center" ]
+                [ div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
+                    [ div [ class "flex flex-col items-center" ]
+                        [ span [ class "text-4xl text-gray-500 mb-10" ] [ currentQuestionNoText model.survey ]
+                        , p [ class "text-6xl inline-block text-center" ] [ text model.survey.current.text ]
+                        ]
+                    , div [ class "text-5xl flex flex-col items-center w-full" ]
+                        [ viewAnswer model.survey ]
+                    , div [ class "flex flex-row w-full text-4xl" ]
+                        (questionControlButtons model)
+                    ]
                 ]
-            , div [ class "text-5xl flex flex-col items-center w-full" ]
-                [ viewAnswer model ]
-            , div [ class "flex flex-row w-full text-4xl" ]
-                (questionControlButtons model)
-            ]
-        ]
 
 
 questionControlButtons : Model -> List (Html Msg)
 questionControlButtons model =
     let
         nextOrSubmitButton =
-            if isLastQuestion model then
+            if isLastQuestion model.survey then
                 button
                     [ onClick (SubmitSurvey model)
                     , class "bg-green-300 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded"
@@ -196,7 +210,7 @@ questionControlButtons model =
                 button
                     [ onClick NextQuestion
                     , class ("bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded " ++ buttonNextOpacityStyle model)
-                    , disabled (isErr (validateAnswer model.current.answer))
+                    , disabled (isErr (validateAnswer model.survey.current.answer))
                     ]
                     [ text "Next ▶" ]
     in
@@ -322,7 +336,7 @@ buttonNextOpacityStyle model =
     let
         toBeDisabled : Bool
         toBeDisabled =
-            isErr (validateAnswer model.current.answer) || List.isEmpty model.next
+            isErr (validateAnswer model.survey.current.answer) || List.isEmpty model.survey.next
     in
     if toBeDisabled then
         "bg-opacity-50 text-opacity-50"
@@ -336,7 +350,7 @@ buttonPreviousOpacityStyle model =
     let
         toBeDisabled : Bool
         toBeDisabled =
-            List.isEmpty model.previous
+            List.isEmpty model.survey.previous
     in
     if toBeDisabled then
         "bg-opacity-50 text-opacity-50"
