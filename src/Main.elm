@@ -219,7 +219,7 @@ questionControlButtons model =
             if isLastQuestion model.survey then
                 button
                     [ onClick (SubmitSurvey model)
-                    , class "bg-green-300 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded"
+                    , class "bg-green-400 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded"
                     ]
                     [ text "Submit ✔" ]
 
