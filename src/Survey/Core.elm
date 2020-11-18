@@ -101,6 +101,10 @@ surveyLength s =
     currentQuestionNumber s + List.length s.next
 
 
+isFirstQuestion : Survey -> Bool
+isFirstQuestion s =
+    s.previous == []
+
 isLastQuestion : Survey -> Bool
 isLastQuestion s =
     s.next == []

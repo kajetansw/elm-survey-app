@@ -4,8 +4,8 @@ import Browser
 import Graphql.Http
 import Graphql.Operation exposing (RootMutation, RootQuery)
 import Graphql.SelectionSet exposing (SelectionSet)
-import Html exposing (Html, button, div, img, input, label, main_, option, p, select, span, text, textarea, a)
-import Html.Attributes exposing (checked, class, disabled, rows, selected, src, style, type_, value, href, target)
+import Html exposing (Html, a, button, div, img, input, label, main_, option, p, select, span, text, textarea)
+import Html.Attributes exposing (checked, class, disabled, href, rows, selected, src, style, target, type_, value)
 import Html.Events exposing (onClick)
 import Html.Events.Extra exposing (onChange)
 import RemoteData exposing (RemoteData(..))
@@ -182,7 +182,7 @@ view model =
                 Success _ ->
                     div
                         [ style "font-family" "'Comfortaa', cursive"
-                        , class "flex flex-col items-center text-green-600 text-6xl font-semibold items-center justify-center transition-all duration-1000 ease-in-out"
+                        , class "flex flex-col items-center text-green-600 text-6xl font-semibold items-center justify-center transition-all duration-1000 ease-out"
                         ]
                         [ p [] [ text "Thank you for" ]
                         , p [] [ text "submitting!" ]
@@ -219,23 +219,30 @@ questionControlButtons model =
             if isLastQuestion model.survey then
                 button
                     [ onClick (SubmitSurvey model)
-                    , class "bg-green-300 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded"
+                    , class "bg-green-300 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded"
                     ]
                     [ text "Submit ✔" ]
 
             else
                 button
                     [ onClick NextQuestion
-                    , class ("bg-yellow-500 text-black font-bold py-2 px-4 w-3/6 ml-4 rounded " ++ buttonNextOpacityStyle model)
+                    , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded " ++ buttonNextOpacityStyle model)
                     , disabled (isErr (validateAnswer model.survey.current.answer))
                     ]
                     [ text "Next ▶" ]
+
+        previousOrEmpty =
+            if isFirstQuestion model.survey then
+                div [ class "w-3/6" ] []
+
+            else
+                button
+                    [ onClick PreviousQuestion
+                    , class "bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded"
+                    ]
+                    [ text "◀ Previous" ]
     in
-    [ button
-        [ onClick PreviousQuestion
-        , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded " ++ buttonPreviousOpacityStyle model)
-        ]
-        [ text "◀ Previous" ]
+    [ previousOrEmpty
     , nextOrSubmitButton
     ]
 
@@ -356,21 +363,7 @@ buttonNextOpacityStyle model =
             isErr (validateAnswer model.survey.current.answer) || List.isEmpty model.survey.next
     in
     if toBeDisabled then
-        "bg-opacity-50 text-opacity-50"
-
-    else
-        ""
-
-
-buttonPreviousOpacityStyle : Model -> String
-buttonPreviousOpacityStyle model =
-    let
-        toBeDisabled : Bool
-        toBeDisabled =
-            List.isEmpty model.survey.previous
-    in
-    if toBeDisabled then
-        "bg-opacity-50 text-opacity-50"
+        "bg-opacity-25 text-opacity-25"
 
     else
         ""
