@@ -190,14 +190,14 @@ view model =
                         ]
 
                 _ ->
-                    div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
+                    div [ class "sm:w-10/12 lg:w-8/12 h-full p-12 lg:p-6 mt-12 mb-12 bg-white shadow-md rounded flex flex-col justify-between items-center sm:rounded-xl lg:rounded-md" ]
                         [ div [ class "flex flex-col items-center" ]
-                            [ span [ class "text-4xl text-gray-500 mb-10" ] [ currentQuestionNoText model.survey ]
-                            , p [ class "text-6xl inline-block text-center" ] [ text model.survey.current.text ]
+                            [ span [ class "sm:text-xl md:text-4xl text-gray-500 mb-5" ] [ currentQuestionNoText model.survey ]
+                            , p [ class "text-6xl lg:text-2xl inline-block text-center" ] [ text model.survey.current.text ]
                             ]
-                        , div [ class "text-5xl flex flex-col items-center w-full" ]
+                        , div [ class "text-5xl lg:text-3xl flex flex-col items-center w-full" ]
                             [ viewAnswer model.survey ]
-                        , div [ class "flex flex-row w-full text-4xl" ]
+                        , div [ class "flex flex-row w-full sm:text-2xl md:text-4x" ]
                             (questionControlButtons model)
                         ]
     in
@@ -215,18 +215,21 @@ view model =
 questionControlButtons : Model -> List (Html Msg)
 questionControlButtons model =
     let
+        defaultButtonStyles =
+            "text-black font-bold py-8 lg:py-2 px-4 lg:px-1 text-3xl lg:text-xl w-3/6 ml-4 rounded "
+
         nextOrSubmitButton =
             if isLastQuestion model.survey then
                 button
                     [ onClick (SubmitSurvey model)
-                    , class "bg-green-400 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded"
+                    , class ("bg-green-400 " ++ defaultButtonStyles)
                     ]
                     [ text "Submit ✔" ]
 
             else
                 button
                     [ onClick NextQuestion
-                    , class ("bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 ml-4 rounded " ++ buttonDisabledStyle model)
+                    , class ("bg-yellow-500 " ++ defaultButtonStyles ++ buttonDisabledStyle model)
                     , disabled (isErr (validateAnswer model.survey.current.answer))
                     ]
                     [ text "Next ▶" ]
@@ -238,7 +241,7 @@ questionControlButtons model =
             else
                 button
                     [ onClick PreviousQuestion
-                    , class "bg-yellow-500 text-black font-bold py-8 px-4 w-3/6 mr-4 rounded"
+                    , class ("bg-yellow-500 " ++ defaultButtonStyles)
                     ]
                     [ text "◀ Previous" ]
     in
@@ -274,7 +277,7 @@ viewAnswer s =
                 labeledValuesToHtml =
                     List.map
                         (\l ->
-                            label [ class "flex items-center mb-12" ]
+                            label [ class "flex items-center mb-10 lg:mb-2" ]
                                 [ input
                                     [ type_ "checkbox"
                                     , class "form-checkbox border-gray-700 mr-6 rounded-md"
@@ -306,14 +309,14 @@ viewAnswer s =
                     option [ value txt, selected (isSelected txt), disabled (txt == answer.default) ] [ text txt ]
             in
             select
-                [ class "form-select w-10/12 mt-1 text-5xl"
+                [ class "form-select w-10/12 mt-1 text-5xl lg:text-2xl"
                 , onChange (\val -> SelectAnswerChanged val)
                 ]
                 (List.map optionToHtml (answer.default :: answer.options))
 
         TextAnswer txt ->
             textarea
-                [ class "form-textarea w-full text-5xl"
+                [ class "form-textarea w-full text-5xl lg:text-3xl"
                 , rows 8
                 , onChange (\val -> TextAnswerChanged val)
                 ]

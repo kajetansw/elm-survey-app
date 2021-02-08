@@ -15,6 +15,7 @@ question1 =
             , { text = "React", value = False }
             , { text = "Vue", value = False }
             , { text = "PureScript", value = False }
+            , { text = "Other", value = False }
             ]
     }
 
