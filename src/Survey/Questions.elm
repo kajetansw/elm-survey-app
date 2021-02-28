@@ -5,16 +5,18 @@ import Survey.Core exposing (..)
 
 question1 : Question
 question1 =
-    { text = "What's your daily front-end stack?"
+    { text = "What's your primary front-end stack?"
     , answer =
         CheckboxAnswer
             [ { text = "JavaScript", value = False }
             , { text = "TypeScript", value = False }
-            , { text = "Elm", value = False }
             , { text = "Angular", value = False }
             , { text = "React", value = False }
             , { text = "Vue", value = False }
+            , { text = "Elm", value = False }
             , { text = "PureScript", value = False }
+            , { text = "ReScript/Reason", value = False }
+            , { text = "ScalaJS", value = False }
             , { text = "Other", value = False }
             ]
     }
